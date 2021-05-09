@@ -26,15 +26,17 @@ def main(spark):
     # modelling ALS
     rank = [25]
     regParam = [1]
+    alpha = [10]
     
     for r in rank:
         for reg in regParam:
-            als = ALS(rank = r, maxIter=20, regParam=reg, userCol="user", itemCol="track", ratingCol="count",\
-                    nonnegative = True, implicitPrefs = True, coldStartStrategy="drop", alpha = 15, seed=42)
+            for a in alpha:
+                als = ALS(rank = r, maxIter=20, regParam=reg, userCol="user", itemCol="track", ratingCol="count",\
+                        nonnegative = True, implicitPrefs = True, coldStartStrategy="drop", alpha = 15, seed=42)
             
-            model = als.fit(df_train)
-            print(f"finished training ALS model with rank{r} and reg{reg}")
-            model.write().overwrite().save(f"hdfs:/user/zn2041/ALS_model_rank{r}_reg{reg}")
+                model = als.fit(df_train)
+                print(f"finished training ALS model with rank{r} and reg{reg} and alpha {a}")
+                model.write().overwrite().save(f"hdfs:/user/zn2041/ALS_model_rank{r}_reg{reg}_alpha{a}")
 
     spark.stop()
     
