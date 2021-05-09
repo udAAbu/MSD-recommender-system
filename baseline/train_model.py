@@ -32,7 +32,7 @@ def main(spark):
         for reg in regParam:
             for a in alpha:
                 als = ALS(rank = r, maxIter=20, regParam=reg, userCol="user", itemCol="track", ratingCol="count",\
-                        nonnegative = True, implicitPrefs = True, coldStartStrategy="drop", alpha = 15, seed=42)
+                        nonnegative = True, implicitPrefs = True, coldStartStrategy="drop", alpha = a, seed=42)
             
                 model = als.fit(df_train)
                 print(f"finished training ALS model with rank{r} and reg{reg} and alpha {a}")
