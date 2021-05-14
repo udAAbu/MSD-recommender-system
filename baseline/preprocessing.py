@@ -52,7 +52,7 @@ def main(spark):
 
     df_train = df_train.drop("user_id").drop("track_id")
     df_val = df_val.drop("user_id").drop("track_id")
-    df_test = df_val.drop("user_id").drop("track_id")    
+    df_test = df_test.drop("user_id").drop("track_id")    
     
     df_train.write.mode("overwrite").parquet("hdfs:/user/zn2041/df_train_clean.parquet")
     df_val.write.mode("overwrite").parquet("hdfs:/user/zn2041/df_val_clean.parquet")
