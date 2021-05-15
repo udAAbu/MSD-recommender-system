@@ -9,7 +9,7 @@ The baseline folder contains 3 python files and 1 spreadsheet:
 2. [train_model.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/train_model.py). This is the training script. The ALS models will be trained based on the *df_train_clean.parquet*, and the model will also be saved to HDFS.
 3. [eval_model.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/eval_model.py). This is the evaluation script. You can decide to evaluate the model on the validation set or test set by specifying the parquet file path when you submit the job. 
 
-  - Here is a simple example showing the precedures to run the codes (evaluate on validation set):
+  - Here is a simple example showing the precedures to run the codes on cluster (evaluate on validation set):
     ```
     spark-submit preprocessing.py
     spark-submit train_model.py
@@ -22,7 +22,7 @@ To successfully run the codes in this part, you need to export the model paramet
 1. [annoy_trees.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/annoy/annoy_trees.py). This is the script that creates the index and builds the trees. You need to specify the model's path in your local machine, the number of rank you used, the number of trees you want to build, and where to save the trees. 
 2. [annoy_query.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/annoy/annoy_query.py). This is the script that does the query and evaluate the performance. Just as before, you need to specify the model's path in your local machine, the number of rank you used, the path of the built trees, and which file you want to query on. 
     
-  - Here is a simple example showing the procedures to run the codes (query on validation set):
+  - Here is a simple example showing the procedures to run the codes locally (query on validation set):
     ```
     python annoy_trees.py --model_path ..\models\ALS_model_rank50_reg1_alpha15\ --rank 50 --tree_path .\trees\annoy_tree_25.ann --num_trees 25
     python annoy_query.py --model_path ..\models\ALS_model_rank50_reg1_alpha15\ --rank 50 --tree_path .\trees\annoy_tree_25.ann --query_df ..\data\df_val_clean.parquet\ 
