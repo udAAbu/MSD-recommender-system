@@ -13,23 +13,23 @@ def build_trees(spark, model_path, rank, num_trees, tree_path):
     model = ALSModel.load(model_path)
     
     item_factors = model.itemFactors
-    user_factors = model.userFactors
-
     annoy_item_factors = item_factors.withColumnRenamed("id", "annoy_id")
     
     tree = AnnoyIndex(int(rank), 'dot')
+    print("Creating index...")
     for item in tqdm(annoy_item_factors.collect()):
-        tree.add_item(item.annoy_id, item.features)
-
+        tree.add_item(item['annoy_id'], item['features'])
+    
     n_trees = int(num_trees)
+    print("Creating trees...")
     tree.build(n_trees)
     tree.save(tree_path)
+    print("Finished!")
+    
+    spark.stop()
 
 if __name__ == "__main__":
-    spark = SparkSession.builder.appName("annoy_trees")\
-    .config("spark.executor.memory", "4g")\
-    .config("spark.driver.memory", "4g")\
-    .getOrCreate()
+    spark = SparkSession.builder.appName("annoy_trees").getOrCreate()
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", help = "path of ALS model")
@@ -38,6 +38,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_trees", help = "number of trees")
     
     args = parser.parse_args()
+    
     model_path = args.model_path
     rank = args.rank
     tree_path = args.tree_path
