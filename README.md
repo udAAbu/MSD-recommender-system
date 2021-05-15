@@ -29,4 +29,5 @@ To successfully run the codes in this part, you need to export the model paramet
     ```
 
 ## Visualization
-The visualize folder contains the jupyter notebook we used to create the T-SNE plot. All the metadata being used in this part is in the metadata folder. 
+The visualize folder contains the ipython notebook [T-SNE.ipynb](https://github.com/udAAbu/MSD-recommender-system/blob/main/visualize/T-SNE.ipynb) we used to create the T-SNE plot. All the metadata being used in this part can be found in the metadata folder. 
+- Note: Github has some problem rendering the ipynb file, and you probably want to use the [online nbviewer](https://nbviewer.jupyter.org/). 
