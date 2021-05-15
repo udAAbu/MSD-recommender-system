@@ -27,8 +27,12 @@ def main(spark):
 
     # modelling ALS
     rank = [20, 30, 40, 50]
-    reg = [0.01, 0.1, 1, 10]
+    regParam = [0.01, 0.1, 1, 10]
     alpha = [5, 10, 15]
+    
+    for r in rank:
+        for reg in regParam:
+	    for a in alpha:
     
 
     model = ALSModel.load(f"hdfs:/user/zn2041/ALS_model_rank{rank}_reg{reg}_alpha{alpha}")
