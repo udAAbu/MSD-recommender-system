@@ -26,28 +26,21 @@ def main(spark):
     df_val = spark.read.parquet("hdfs:/user/zn2041/df_val_clean.parquet")
 
     # modelling ALS
-    rank = 25
-    reg = 1
-    alpha = 10
+    rank = [20, 30, 40, 50]
+    reg = [0.01, 0.1, 1, 10]
+    alpha = [5, 10, 15]
+    
 
     model = ALSModel.load(f"hdfs:/user/zn2041/ALS_model_rank{rank}_reg{reg}_alpha{alpha}")
     print(f"finished loading ALS_model_rank{rank}_reg{reg}_alpha{alpha}")
 
     query_users = df_val.select("user").distinct()
+
     predictions = model.recommendForUserSubset(query_users, 500).select('user', 'recommendations.track').repartition("user")
 
-    print(predictions.printSchema())
-    print(predictions.show(2))
-    
     ground_truth = df_val.groupBy("user").agg(collect_list('track').alias("ground_truth")).repartition("user")
 
-    print(ground_truth.printSchema())
-    print(ground_truth.show(2))
-
     df_result = predictions.join(broadcast(ground_truth), on = 'user', how = 'inner')
-
-    #print(df_result.explain())
-    print(df_result.show(5))
 
     predictionAndLabels = df_result.rdd.map(lambda row: (row['track'], row['ground_truth']))
 
@@ -58,7 +51,7 @@ def main(spark):
 
     prec = metrics.precisionAt(500)
     print("Precision @ 500(brute-force)", prec)
-    
+
     end = time.time()
     print("total validation time: ", end - start)
     spark.stop()
