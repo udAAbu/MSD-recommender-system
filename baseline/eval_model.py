@@ -7,6 +7,7 @@ Usage:
 #Use getpass to obtain user netID
 import getpass
 import numpy
+import sys
 # And pyspark.sql to get the spark session
 import pyspark
 from pyspark.sql import SparkSession
@@ -20,10 +21,10 @@ from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.mllib.evaluation import RankingMetrics
 import time
 
-def main(spark):
+def main(spark, eval_df):
     start = time.time()
 
-    df_val = spark.read.parquet("hdfs:/user/zn2041/df_val_clean.parquet")
+    df_val = spark.read.parquet(eval_df)
 
     # modelling ALS
     rank = [20, 30, 40, 50]
@@ -32,32 +33,28 @@ def main(spark):
     
     for r in rank:
         for reg in regParam:
-	    for a in alpha:
-    
+            for a in alpha:
+                model = ALSModel.load(f"hdfs:/user/zn2041/ALS_model_rank{r}_reg{reg}_alpha{a}")
+                print(f"finished loading ALS_model_rank{r}_reg{reg}_alpha{a}")
 
-    model = ALSModel.load(f"hdfs:/user/zn2041/ALS_model_rank{rank}_reg{reg}_alpha{alpha}")
-    print(f"finished loading ALS_model_rank{rank}_reg{reg}_alpha{alpha}")
+                query_users = df_val.select("user").distinct()
 
-    query_users = df_val.select("user").distinct()
+                predictions = model.recommendForUserSubset(query_users, 500).select('user', 'recommendations.track').repartition("user")
 
-    predictions = model.recommendForUserSubset(query_users, 500).select('user', 'recommendations.track').repartition("user")
+                ground_truth = df_val.groupBy("user").agg(collect_list('track').alias("ground_truth")).repartition("user")
 
-    ground_truth = df_val.groupBy("user").agg(collect_list('track').alias("ground_truth")).repartition("user")
+                df_result = predictions.join(broadcast(ground_truth), on = 'user', how = 'inner')
 
-    df_result = predictions.join(broadcast(ground_truth), on = 'user', how = 'inner')
+                predictionAndLabels = df_result.rdd.map(lambda row: (row['track'], row['ground_truth']))
 
-    predictionAndLabels = df_result.rdd.map(lambda row: (row['track'], row['ground_truth']))
+                metrics = RankingMetrics(predictionAndLabels)
 
-    metrics = RankingMetrics(predictionAndLabels)
-
-    MAP = metrics.meanAveragePrecision
-    print("MAP(brute-force): ", MAP)
-
-    prec = metrics.precisionAt(500)
-    print("Precision @ 500(brute-force)", prec)
-
-    end = time.time()
-    print("total validation time: ", end - start)
+                MAP = metrics.meanAveragePrecision
+                print("MAP(brute-force): ", MAP)
+                prec = metrics.precisionAt(500)
+                print("Precision @ 500(brute-force)", prec)
+                end = time.time()
+                print("total validation time: ", end - start)
     spark.stop()
 
 
@@ -74,7 +71,7 @@ if __name__ == "__main__":
 					('spark.sql.broadcastTimeout', 300)])
 
     spark = SparkSession.builder.appName('ds_1004_project').config(conf=config).getOrCreate()
-
+    eval_df = sys.argv[1]
     # Call our main routine
-    main(spark)
+    main(spark, eval_df)
 
