@@ -24,9 +24,9 @@ def main(spark):
     df_train = spark.read.parquet("hdfs:/user/zn2041/df_train_clean.parquet")
     
     # modelling ALS
-    rank = [25]
-    regParam = [1]
-    alpha = [10]
+    rank = [20, 30, 40, 50]
+    regParam = [0.01, 0.1, 1, 10]
+    alpha = [5, 10, 15]
     
     for r in rank:
         for reg in regParam:
