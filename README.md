@@ -4,7 +4,7 @@ Recommendation System For Million Song Dataset
 # Code documentation
 
 ## Baseline
-The baseline folder contains 3 python files and 1 spreadsheet:
+The baseline folder contains 3 python file, 1 spreadsheet and our optimal model:
 1. [Preprocessing.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/preprocessing.py). This is the script we used for cleaning up the datasets so that they can be used to fit into pyspark ALS model for training and evaluation purpose. It will produce three parquet files, which are *df_train_clean.parquet, df_val_clean.parquet, df_test_clean.parquet*, and they will be saved to HDFS.
 2. [train_model.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/train_model.py). This is the training script. The ALS models will be trained based on the *df_train_clean.parquet*, and the model will also be saved to HDFS.
 3. [eval_model.py](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/eval_model.py). This is the evaluation script. You can decide to evaluate the model on the validation set or test set by specifying the parquet file path when you submit the job. 
@@ -16,6 +16,7 @@ The baseline folder contains 3 python files and 1 spreadsheet:
     spark-submit eval_model.py hdfs:/user/{netID}/df_val_clean.parquet
     ```
 4. [tuning_results.xlsx](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/tuning_results.xlsx). This is a spreadsheet showing the results for all the hyperparameters we tried. 
+5. [ALS_model_rank50_reg1_alpha15](https://github.com/udAAbu/MSD-recommender-system/tree/main/baseline/ALS_model_rank50_reg1_alpha15).
 
 ## Annoy
 To successfully run the codes in this part, you need to export the model parameters from HDFS to your local machine, as well as the *df_val_clean.parquet* or *df_test_clean.parquet* files depending on how you want to filter the user factors. This annoy folder contains 2 files:
