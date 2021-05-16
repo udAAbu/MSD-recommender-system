@@ -16,7 +16,7 @@ The baseline folder contains 3 python file, 1 spreadsheet and our optimal model:
     spark-submit eval_model.py hdfs:/user/{netID}/df_val_clean.parquet
     ```
 4. [tuning_results.xlsx](https://github.com/udAAbu/MSD-recommender-system/blob/main/baseline/tuning_results.xlsx). This is a spreadsheet showing the results for all the hyperparameters we tried. 
-5. [ALS_model_rank50_reg1_alpha15](https://github.com/udAAbu/MSD-recommender-system/tree/main/baseline/ALS_model_rank50_reg1_alpha15).
+5. [ALS_model_rank50_reg1_alpha15](https://github.com/udAAbu/MSD-recommender-system/tree/main/baseline/ALS_model_rank50_reg1_alpha15). This is the optimal model we got from the hyperparameter tuning. 
 
 ## Annoy
 To successfully run the codes in this part, you need to export the model parameters from HDFS to your local machine, as well as the *df_val_clean.parquet* or *df_test_clean.parquet* files depending on how you want to filter the user factors. This annoy folder contains 2 files:
